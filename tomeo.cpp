@@ -24,6 +24,7 @@
 #include <QtCore/QDirIterator>
 #include "the_player.h"
 #include "the_button.h"
+#include "the_bar.h"
 
 #include <QtWidgets>
 
@@ -95,6 +96,7 @@ int main(int argc, char *argv[]) {
 
     // the QMediaPlayer which controls the playback
     ThePlayer *player = new ThePlayer;
+    TheBar* bar = new TheBar();
     player->setVideoOutput(videoWidget);
 
     QPushButton* pause = new QPushButton("pause");
@@ -107,6 +109,10 @@ int main(int argc, char *argv[]) {
     QStringList text;
     text << "settings" << "resolution" << "playback speed" << "subtiles";
     settings->addItems(text);
+
+    pause->connect(pause, SIGNAL(clicked()), bar, SLOT (pause()));
+    play->connect(play, SIGNAL(clicked()), bar, SLOT (resume()));
+
 
 
     QTextEdit* commentSection = new QTextEdit();
@@ -139,6 +145,7 @@ int main(int argc, char *argv[]) {
 
     QVBoxLayout* vidAndButt = new QVBoxLayout();
     vidAndButt->addWidget(videoWidget);
+    vidAndButt->addWidget(bar);
     vidAndButt->addWidget(buttonHolderWidget);
     vidAndButt->addWidget(commentSection);
 
