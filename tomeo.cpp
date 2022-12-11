@@ -97,6 +97,54 @@ int main(int argc, char *argv[]) {
     ThePlayer *player = new ThePlayer;
     player->setVideoOutput(videoWidget);
 
+    QPushButton* pause = new QPushButton("pause");
+    pause->connect(pause, SIGNAL(clicked()), player, SLOT (pause()));
+    QPushButton* play = new QPushButton("play");
+    play->connect(play, SIGNAL(clicked()), player, SLOT (play()));
+    QPushButton* restart = new QPushButton("restart");
+    restart->connect(restart, SIGNAL(clicked()), player, SLOT (stop()));
+    QComboBox* settings = new QComboBox();
+    QStringList text;
+    text << "settings" << "resolution" << "playback speed" << "subtiles";
+    settings->addItems(text);
+
+
+    QTextEdit* commentSection = new QTextEdit();
+    commentSection->setPlaceholderText("enter a comment ...");
+
+
+
+    QLabel* volumeLabel = new QLabel("volume");
+    QSlider *volume = new QSlider(Qt::Horizontal);
+    volume->setRange(0,100);
+    QHBoxLayout* volumeHolder = new QHBoxLayout();
+    volumeHolder->addWidget(volumeLabel);
+    volumeHolder->addWidget(volume);
+    QWidget* volumeWidget = new QWidget();
+    volumeWidget->setLayout(volumeHolder);
+
+
+    QHBoxLayout* buttonHolder = new QHBoxLayout();
+    buttonHolder->addWidget(pause);
+    buttonHolder->addWidget(play);
+    buttonHolder->addWidget(restart);
+    buttonHolder->addWidget(volumeWidget);
+    buttonHolder->addWidget(settings);
+
+
+
+    QWidget* buttonHolderWidget = new QWidget();
+    buttonHolderWidget->setLayout(buttonHolder);
+
+
+    QVBoxLayout* vidAndButt = new QVBoxLayout();
+    vidAndButt->addWidget(videoWidget);
+    vidAndButt->addWidget(buttonHolderWidget);
+    vidAndButt->addWidget(commentSection);
+
+    QWidget* vidButt = new QWidget();
+    vidButt->setLayout(vidAndButt);
+
     // a row of buttons
     QWidget *buttonWidget = new QWidget();
     // a list of the buttons
@@ -110,15 +158,18 @@ int main(int argc, char *argv[]) {
     QWidget *buttonsToScrollArea = new QWidget();
     QVBoxLayout *buttonLayout = new QVBoxLayout();
 
-
+    int count = 0;
     // create the four buttons
-    for ( int i = 0; i < 4; i++ ) {
+    for ( int i = 0; i < 16; i++ ) {
         TheButton *button = new TheButton(buttonWidget);
         button->connect(button, SIGNAL(jumpTo(TheButtonInfo* )), player, SLOT (jumpTo(TheButtonInfo*))); // when clicked, tell the player to play.
         buttons.push_back(button);
         buttonLayout->addWidget(button);
         //layout->addWidget(button);
-        button->init(&videos.at(i));
+        if(i%4 == 0)
+            count = 0;
+        button->init(&videos.at(count));
+        count++;
     }
 
     buttonsToScrollArea->setLayout(buttonLayout);
@@ -131,13 +182,16 @@ int main(int argc, char *argv[]) {
     QHBoxLayout *top = new QHBoxLayout();
     window.setLayout(top);
     window.setWindowTitle("tomeo");
-    window.setMinimumSize(800, 680);
+    window.setMinimumSize(900, 580);
 
     //set the width of the thumbnails to be a suitable width for the viewing experience
-    buttonWidget->setMaximumWidth(window.height() * 0.3);
+    buttonWidget->setMaximumWidth(window.height() * 0.5);
+    buttonHolderWidget->setMaximumHeight(0.1 * window.height());
+    thumbArea->setMinimumWidth(0.35*window.height());
+    commentSection->setMaximumHeight(window.height() * 0.2);
 
     // add the video and the buttons to the top level widget
-    top->addWidget(videoWidget);
+    top->addWidget(vidButt);
     top->addWidget(buttonWidget);
 
     // showtime!
