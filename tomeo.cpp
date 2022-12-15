@@ -66,13 +66,14 @@ std::vector<TheButtonInfo> getInfoIn (std::string loc) {
 
     return out;
 }
-
+void balls() {
+    std::cout << "balls" << std::endl;
+}
 
 int main(int argc, char *argv[]) {
 
     // let's just check that Qt is operational first
     qDebug() << "Qt version: " << QT_VERSION_STR << endl;
-
     // create the Qt Application
     QApplication app(argc, argv);
 
@@ -91,20 +92,42 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
+    //The main window
+
+    QWidget window;
+    QHBoxLayout *topH = new QHBoxLayout();
+    QVBoxLayout *topV = new QVBoxLayout();
+    window.setMinimumSize(720, 1080);
+    window.setMaximumSize(720, 1080);
+    if (window.height() <= window.width()) {
+        window.setLayout(topH);
+    }
+    else {
+        window.setLayout(topV);
+    }
+    window.setWindowTitle("tomeo");
+
     // the widget that will show the video
     QVideoWidget *videoWidget = new QVideoWidget;
 
     // the QMediaPlayer which controls the playback
     ThePlayer *player = new ThePlayer;
     TheBar* bar = new TheBar();
+    bar->setMaximumHeight(20);
     player->setVideoOutput(videoWidget);
 
-    QPushButton* pause = new QPushButton("pause");
+    QPushButton* pause = new QPushButton();
     pause->connect(pause, SIGNAL(clicked()), player, SLOT (pause()));
-    QPushButton* play = new QPushButton("play");
+    pause->setIcon(QIcon(":/icons/pause.png"));
+    pause->setIconSize(QSize(20,20));
+    QPushButton* play = new QPushButton();
     play->connect(play, SIGNAL(clicked()), player, SLOT (play()));
-    QPushButton* restart = new QPushButton("restart");
+    play->setIcon(QIcon(":/icons/play.png"));
+    play->setIconSize(QSize(20,20));
+    QPushButton* restart = new QPushButton();
     restart->connect(restart, SIGNAL(clicked()), player, SLOT (stop()));
+    restart->setIcon(QIcon(":/icons/stop.png"));
+    restart->setIconSize(QSize(20,20));
     QComboBox* settings = new QComboBox();
     QStringList text;
     text << "settings" << "resolution" << "playback speed" << "subtiles";
@@ -142,16 +165,6 @@ int main(int argc, char *argv[]) {
     QWidget* buttonHolderWidget = new QWidget();
     buttonHolderWidget->setLayout(buttonHolder);
 
-
-    QVBoxLayout* vidAndButt = new QVBoxLayout();
-    vidAndButt->addWidget(videoWidget);
-    vidAndButt->addWidget(bar);
-    vidAndButt->addWidget(buttonHolderWidget);
-    vidAndButt->addWidget(commentSection);
-
-    QWidget* vidButt = new QWidget();
-    vidButt->setLayout(vidAndButt);
-
     // a row of buttons
     QWidget *buttonWidget = new QWidget();
     // a list of the buttons
@@ -181,28 +194,52 @@ int main(int argc, char *argv[]) {
 
     buttonsToScrollArea->setLayout(buttonLayout);
     thumbArea->setWidget(buttonsToScrollArea);
-    layout->addWidget(thumbArea);
+    thumbArea->setMaximumHeight(window.height()*.2);
+
+
+    QVBoxLayout* vidAndButt = new QVBoxLayout();
+    vidAndButt->addWidget(videoWidget);
+    vidAndButt->addWidget(bar);
+    vidAndButt->addWidget(buttonHolderWidget);
+    vidAndButt->addWidget(commentSection);
+    vidAndButt->addWidget(thumbArea);
+    QWidget* vidButt = new QWidget();
+    vidButt->setLayout(vidAndButt);
     // tell the player what buttons and videos are available
     player->setContent(&buttons, & videos);
     // create the main window and layout
-    QWidget window;
-    QHBoxLayout *top = new QHBoxLayout();
-    window.setLayout(top);
-    window.setWindowTitle("tomeo");
-    window.setMinimumSize(900, 580);
+
 
     //set the width of the thumbnails to be a suitable width for the viewing experience
-    buttonWidget->setMaximumWidth(window.height() * 0.5);
-    buttonHolderWidget->setMaximumHeight(0.1 * window.height());
-    thumbArea->setMinimumWidth(0.35*window.height());
-    commentSection->setMaximumHeight(window.height() * 0.2);
+    if (window.height() <= window.width()) {
+        buttonWidget->setMaximumWidth(window.height() * 0.5);
+        buttonHolderWidget->setMaximumHeight(0.1 * window.height());
+        thumbArea->setMinimumWidth(0.35*window.height());
+        commentSection->setMaximumHeight(window.height() * 0.2);
+    }
+    else {
+        videoWidget->setMinimumHeight(window.height() * .4);
+        videoWidget->setMaximumHeight(window.height() * .4);
+        buttonWidget->setMaximumWidth(window.width());
+        buttonWidget->setMinimumWidth(window.width());
+        buttonHolderWidget->setMaximumHeight(0.05 * window.height());
+        commentSection->setMaximumHeight(window.height() * 0.03);
+        commentSection->setMinimumHeight(window.height() * 0.03);
+    }
 
     // add the video and the buttons to the top level widget
-    top->addWidget(vidButt);
-    top->addWidget(buttonWidget);
-
+    if (window.height() <= window.width()) {
+            topH->addWidget(vidButt);
+            topH->addWidget(buttonWidget);
+            window.show();
+        }
+    else {
+            topV->addWidget(vidButt);
+            topV->addWidget(buttonWidget);
+            window.show();
+        }
     // showtime!
-    window.show();
+
 
     // wait for the app to terminate
     return app.exec();
