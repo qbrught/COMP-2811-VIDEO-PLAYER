@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     window.setStyleSheet("background-color: #f5e2df;");
     QHBoxLayout *topH = new QHBoxLayout();
     QVBoxLayout *topV = new QVBoxLayout();
-    window.setMinimumSize(720, 960);
+    window.setMinimumSize(1080, 720);
     if (window.height() <= window.width()) {
         window.setLayout(topH);
     }
@@ -220,7 +220,10 @@ int main(int argc, char *argv[]) {
     vidAndButt->addWidget(bar);
     vidAndButt->addWidget(buttonHolderWidget);
     vidAndButt->addWidget(commentSection);
-    vidAndButt->addWidget(thumbArea);
+    if (window.height() <= window.width()) {
+        vidAndButt->addWidget(thumbArea);
+    }
+
     QWidget* vidButt = new QWidget();
     vidButt->setLayout(vidAndButt);
     // tell the player what buttons and videos are available
@@ -249,6 +252,7 @@ int main(int argc, char *argv[]) {
     if (window.height() <= window.width()) {
             topH->addWidget(vidButt);
             topH->addWidget(buttonWidget);
+            topH->addWidget(thumbArea);
             window.show();
         }
     else {
