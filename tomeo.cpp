@@ -94,11 +94,14 @@ int main(int argc, char *argv[]) {
 
     //The main window
 
+    QPalette p = QPalette();
+
+
     QWidget window;
+    window.setStyleSheet("background-color: #f5e2df;");
     QHBoxLayout *topH = new QHBoxLayout();
     QVBoxLayout *topV = new QVBoxLayout();
-    window.setMinimumSize(720, 1080);
-    window.setMaximumSize(720, 1080);
+    window.setMinimumSize(720, 960);
     if (window.height() <= window.width()) {
         window.setLayout(topH);
     }
@@ -114,6 +117,7 @@ int main(int argc, char *argv[]) {
     ThePlayer *player = new ThePlayer;
     TheBar* bar = new TheBar();
     bar->setMaximumHeight(20);
+    bar->setTextVisible(false);
     player->setVideoOutput(videoWidget);
 
     QPushButton* pause = new QPushButton();
@@ -126,8 +130,10 @@ int main(int argc, char *argv[]) {
     play->setIconSize(QSize(20,20));
     QPushButton* restart = new QPushButton();
     restart->connect(restart, SIGNAL(clicked()), player, SLOT (stop()));
+    restart->connect(restart, SIGNAL(clicked()), bar, SLOT (restart()));
     restart->setIcon(QIcon(":/icons/stop.png"));
     restart->setIconSize(QSize(20,20));
+
     QComboBox* settings = new QComboBox();
     QStringList text;
     text << "settings" << "resolution" << "playback speed" << "subtiles";
@@ -176,15 +182,28 @@ int main(int argc, char *argv[]) {
 
     QScrollArea *thumbArea = new QScrollArea();
     QWidget *buttonsToScrollArea = new QWidget();
-    QVBoxLayout *buttonLayout = new QVBoxLayout();
+    QGridLayout *buttonLayoutGrid = new QGridLayout();
+    QVBoxLayout *buttonLayoutVert = new QVBoxLayout();
+    if (window.height() >= window.width()) {
+        buttonsToScrollArea->setLayout(buttonLayoutGrid);
+    }
+    else {
+        buttonsToScrollArea->setLayout(buttonLayoutVert);
+    }
 
     int count = 0;
     // create the four buttons
     for ( int i = 0; i < 16; i++ ) {
         TheButton *button = new TheButton(buttonWidget);
-        button->connect(button, SIGNAL(jumpTo(TheButtonInfo* )), player, SLOT (jumpTo(TheButtonInfo*))); // when clicked, tell the player to play.
+        button->connect(button, SIGNAL(jumpTo(TheButtonInfo* )), player, SLOT (jumpTo(TheButtonInfo*)));
+        button->connect(button, SIGNAL(jumpTo(TheButtonInfo* )), bar, SLOT (restart()));// when clicked, tell the player to play.
         buttons.push_back(button);
-        buttonLayout->addWidget(button);
+        if (window.height() >= window.width()) {
+            buttonLayoutGrid->addWidget(button,int(i/3),i % 3,1,1);
+        }
+        else {
+            buttonLayoutVert->addWidget(button);
+        }
         //layout->addWidget(button);
         if(i%4 == 0)
             count = 0;
@@ -192,9 +211,8 @@ int main(int argc, char *argv[]) {
         count++;
     }
 
-    buttonsToScrollArea->setLayout(buttonLayout);
     thumbArea->setWidget(buttonsToScrollArea);
-    thumbArea->setMaximumHeight(window.height()*.2);
+    thumbArea->horizontalScrollBar()->setEnabled(false);
 
 
     QVBoxLayout* vidAndButt = new QVBoxLayout();
@@ -238,8 +256,7 @@ int main(int argc, char *argv[]) {
             topV->addWidget(buttonWidget);
             window.show();
         }
-    // showtime!
-
+    // showtime
 
     // wait for the app to terminate
     return app.exec();
