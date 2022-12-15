@@ -230,6 +230,26 @@ int main(int argc, char *argv[]) {
     player->setContent(&buttons, & videos);
     // create the main window and layout
 
+    //create a vertical box layout for the login button and thumbnails
+
+
+    QVBoxLayout *loginAndThumbs = new QVBoxLayout();
+
+    QPushButton* login = new QPushButton("login");
+    loginAndThumbs->addWidget(login);
+
+    QPushButton* uploadButton = new QPushButton("upload");
+    loginAndThumbs->addWidget(uploadButton);
+
+    loginAndThumbs->addWidget(thumbArea);
+
+
+
+    QWidget *loginAndThumbsWidget = new QWidget();
+    loginAndThumbsWidget->setLayout(loginAndThumbs);
+
+
+
 
     //set the width of the thumbnails to be a suitable width for the viewing experience
     if (window.height() <= window.width()) {
@@ -252,7 +272,8 @@ int main(int argc, char *argv[]) {
     if (window.height() <= window.width()) {
             topH->addWidget(vidButt);
             topH->addWidget(buttonWidget);
-            topH->addWidget(thumbArea);
+            //topH->addWidget(thumbArea);
+            topH->addWidget(loginAndThumbsWidget);
             window.show();
         }
     else {
