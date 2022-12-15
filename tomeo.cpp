@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     window.setStyleSheet("background-color: #f5e2df;");
     QHBoxLayout *topH = new QHBoxLayout();
     QVBoxLayout *topV = new QVBoxLayout();
-    window.setMinimumSize(1080, 720);
+    window.setMinimumSize(960, 640);
     if (window.height() <= window.width()) {
         window.setLayout(topH);
     }
@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
     vidAndButt->addWidget(bar);
     vidAndButt->addWidget(buttonHolderWidget);
     vidAndButt->addWidget(commentSection);
-    if (window.height() <= window.width()) {
+    if (window.height() >= window.width()) {
         vidAndButt->addWidget(thumbArea);
     }
 
@@ -230,13 +230,10 @@ int main(int argc, char *argv[]) {
     player->setContent(&buttons, & videos);
     // create the main window and layout
 
-    //create a vertical box layout for the login button and thumbnails
-
-
     QVBoxLayout *loginAndThumbs = new QVBoxLayout();
 
     QPushButton* login = new QPushButton("login");
-    loginAndThumbs->addWidget(login);
+       loginAndThumbs->addWidget(login);
 
     QPushButton* uploadButton = new QPushButton("upload");
     loginAndThumbs->addWidget(uploadButton);
@@ -245,8 +242,12 @@ int main(int argc, char *argv[]) {
 
 
 
-    QWidget *loginAndThumbsWidget = new QWidget();
-    loginAndThumbsWidget->setLayout(loginAndThumbs);
+     QWidget *loginAndThumbsWidget = new QWidget();
+     loginAndThumbsWidget->setLayout(loginAndThumbs);
+
+
+
+
 
 
 
@@ -279,6 +280,7 @@ int main(int argc, char *argv[]) {
     else {
             topV->addWidget(vidButt);
             topV->addWidget(buttonWidget);
+            topV->addWidget(thumbArea);
             window.show();
         }
     // showtime
