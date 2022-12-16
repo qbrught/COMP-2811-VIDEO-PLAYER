@@ -66,9 +66,6 @@ std::vector<TheButtonInfo> getInfoIn (std::string loc) {
 
     return out;
 }
-void balls() {
-    std::cout << "balls" << std::endl;
-}
 
 int main(int argc, char *argv[]) {
 
